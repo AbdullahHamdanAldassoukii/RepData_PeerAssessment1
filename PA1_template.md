@@ -2,9 +2,7 @@
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 Assignment-1 Report
 ==============================
@@ -27,20 +25,20 @@ This assignment makes use of data from a personal activity monitoring device. Th
 <br/>
 
 #### 1. loading the data:  
-```{r echo=TRUE}
+
+```r
 setwd("C:/Users/Abdalla _Hn/Downloads/R Assignments/DataScience/Course 5/week 2");
 activity<-read.csv("activity.csv");
-
 ```
 
 <br/>
 
 ####  2. Processing the data:  
 
-```{r echo=TRUE}
+
+```r
 ## remove the NA values
 cleaned_activity<-activity[complete.cases(activity),] ;
-
 ```
 </br><hr/>
   
@@ -49,7 +47,8 @@ cleaned_activity<-activity[complete.cases(activity),] ;
 <br/>
 
 #####here we calculat the total number of steps pere day and show the mean and median for it
-```{r echo=TRUE}
+
+```r
 library(dplyr);
 #########################################################
 ## here will make a new table that contain
@@ -66,8 +65,9 @@ abline(v = median(total_step_perday$steps),col=colors()[201]);
 
 legend(legend = c("mean","median"), "topright",col=c(colors()[144],colors()[201]),pch="_");
 text(x=3000,y=13,"the mean and median\n are the same");
-
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 
 <hr/>
@@ -75,20 +75,18 @@ text(x=3000,y=13,"the mean and median\n are the same");
 <br/>
 
 
-```{r echo=TRUE}
 
+```r
 A_grouped_by_interval  <-  cleaned_activity %>% group_by(interval) %>% summarise_each(funs(mean(.)),steps);
 
 plot(A_grouped_by_interval$interval,A_grouped_by_interval$steps,main = "average daily activity pattern",xlab = "time series",ylab ="avg. number of steps",col= colors()[34],type = "l");
 abline(v=A_grouped_by_interval$interval[which(A_grouped_by_interval$steps==max(A_grouped_by_interval$steps))],col="blue");
-
-
 ```
 
-```{r echo=FALSE}
-t<-A_grouped_by_interval$interval[which(A_grouped_by_interval$steps==max(A_grouped_by_interval$steps))];
-```
-<ul><li><h5>from the previose plot we find that the 5-minute interval whitch contains the maximum number of steps is:<h4> `r t`</h4> </h5></li></ul>
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
+
+<ul><li><h5>from the previose plot we find that the 5-minute interval whitch contains the maximum number of steps is:<h4> 835</h4> </h5></li></ul>
 <br/><br/>
 </hr>
 
@@ -96,29 +94,30 @@ t<-A_grouped_by_interval$interval[which(A_grouped_by_interval$steps==max(A_group
 <br/>
 <ul><li><h4>firstly we will calculate the total number of missing values in the dataset:</h4></li></ul>
 
-```{r echo=TRUE}
-total_num_of_NA <- sum(!complete.cases(activity));
 
+```r
+total_num_of_NA <- sum(!complete.cases(activity));
 ```
 
-<h5>   so the total number of rows that contains NA value is `r total_num_of_NA`</h5>
+<h5>   so the total number of rows that contains NA value is 2304</h5>
 <br/>
 
 
 <ul><li><h4>secondly we will fill in the missing value with the mean of its variable <h5>(calculated with out the NAs)</h5>:</h4></li></ul>
 
-```{r echo=TRUE}
+
+```r
 mean_of_steps_perday<-as.data.frame( cleaned_activity %>% group_by(date) %>% summarise_each(funs(mean(.)),steps));
         
 mean_of_steps<-mean(cleaned_activity$steps);
 ## here is the new data set with the  the missing data filled in:
 filled_activity<-activity;       
 filled_activity[is.na(match(activity$date,mean_of_steps_perday$date)),1]<-mean_of_steps;
-
 ```
 </br>
 <ul><li><h4>finally: will make a histogram of the total number of steps taken each day </h4></li></ul>
-```{r echo=TRUE}
+
+```r
 total_step_perday<-as.data.frame(filled_activity%>% group_by(date) %>% summarise_each(funs(sum(.)),steps));
 
 
@@ -129,11 +128,16 @@ abline(v = median(total_step_perday$steps),col=colors()[201]);
 
 legend(legend = c("mean","median"), "topright",col=c(colors()[144],colors()[201]),pch="_");
 text(x=3000,y=13,"the mean and median\n are the same");
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
+```r
 mean<-mean(mean(total_step_perday$steps));
 median<-median(total_step_perday$steps);
 ```
 
-<h4> as we see that the mean num of steps is:`r mean` and the median is: `r median` </h4>
+<h4> as we see that the mean num of steps is:1.0766189 &times; 10<sup>4</sup> and the median is: 1.0766189 &times; 10<sup>4</sup> </h4>
 </br>
 <hr/>
 ### 5.Are there differences in activity patterns between weekdays and weekends?
@@ -141,7 +145,8 @@ median<-median(total_step_perday$steps);
 <ul><li><h4>first we will make new variable called weekday to store the weekday of the obsevation :</ul></li></h4>
 
 
-```{r echo=TRUE}
+
+```r
 library(ggplot2);
 ##creat new variable called weekday
 g<-weekdays(as.POSIXct(filled_activity$date))=="Sunday";
@@ -156,8 +161,9 @@ weekendGroupe<-subset(A_grouped_by_intervalWeekday,weekday=="weekend");
 
 ##ploting the avreged steps
 qplot(interval,steps,facets =.~weekday ,data = as.data.frame(A_grouped_by_intervalWeekday),color="red")+geom_line();
+```
 
-``` 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
 
 
 
